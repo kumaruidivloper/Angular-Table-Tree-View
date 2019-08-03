@@ -1,0 +1,50 @@
+<div class="tree-table">
+  <div class="action-container mb-3">
+      <input type="text" class="form-control input-sm text-center" [(ngModel)]="keyword" (keyup)="search()" placeholder="Search"/>
+  </div>
+  <table [class]="'table table-bordered table-sm ' + className">
+    <thead class="thead-dark thead-sm">
+      <tr>
+        <th></th>
+        <ng-container *ngFor="let header of currentPageData.headers">
+          <th (click)="sortColumn(header.dataProperty)">{{header.title}} 
+            <i class="fas fa-arrow-down" *ngIf="sortedColumn[header.dataProperty] === 'ASC'"></i>
+            <i class="fas fa-arrow-up" *ngIf="sortedColumn[header.dataProperty] === 'DESC'"></i>
+          </th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let row of currentPageData.data">
+        <ng-container *ngIf="row !== undefined">
+          <tr>
+            <td *ngIf="!row.expandable" style="width: 10px;"></td>
+            <td *ngIf="row.expandable">
+              <button class="btn btn-secondary btn-sm" (click)="row.expanded = true" *ngIf="!row.expanded"><i
+                  class="fas fa-chevron-right"></i></button>
+              <button class="btn btn-secondary btn-sm" (click)="row.expanded = false" *ngIf="row.expanded"><i
+                  class="fas fa-chevron-down"></i></button>
+            </td>
+            <ng-container *ngFor="let header of currentPageData.headers">
+              <td>{{row.data[header.dataProperty]}}</td>
+            </ng-container>
+          </tr>
+          <tr *ngIf="row.expanded">
+            <td style="width: 10px;"></td>
+            <td [colSpan]="currentPageData.headers.length">
+              <app-tree-table [level]="level + 1" [tableData]="row.children"></app-tree-table>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+  <div class="pagination-buttons" *ngIf="pagesCount > 1">
+    <div class="btn-group float-right">
+      <ng-container *ngFor="let pageNumber of pageNumbers()">
+        <button class="btn" [class]="page === pageNumber ? 'btn btn-primary ' : 'btn btn-secondary '"
+          (click)="changePage(pageNumber)">{{pageNumber}}</button>
+      </ng-container>
+    </div>
+  </div>
+</div>
